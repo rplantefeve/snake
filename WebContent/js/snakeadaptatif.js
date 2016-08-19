@@ -2,9 +2,9 @@
 
 //Variables a modifier pour changer les paramètres du snake
 //Hauteur de la grille
-var hauteur = 30;
+var hauteur = 20;
 //Largeure de la grille
-var largeur = 30;
+var largeur = 20;
 //vitesse maximum
 var vitesseMax=50;
 //vitesse initiale + 1 (car lors de la création de la première pomme, on perd 1 en vitesse)
@@ -12,12 +12,13 @@ var vitesseRouge=100; //vitesse du snake rouge
 var vitesseNoir=100; //vitesse du snake noir
 //nombre de pommes a faire apparaitre à la mort du premier snake
 var nbrPomme = 19;
-var nbrTour = 100; //durée du bonus final en nombre de tour
-var nbrTourBonus = 100; //durée des bonus classiques en nombre de tour
+var nbrTour = 10000; //durée du bonus final en nombre de millisecondes
+var nbrTourBonus = 10000; //durée des bonus classiques en nombre de millisecondes
+var nbrTourVraiBonus = 1000; //durée des vrais bonus classiques en nombre de millisecondes
 var probaJaune = 10;//Probabilité d'apparition d'une pomme jaune
 var probaBleue = 10; //Probabilité d'apparition d'une pomme bleue
-var probaMaron = 2; //Probabilité d'apparition d'une pomme maron
 var probaMaron = 10; //Probabilité d'apparition d'une pomme maron
+var probaViolet = 2; //Probabilité d'apparition d'une pomme maron
 
 
 
@@ -35,16 +36,28 @@ var directionSnakeRouge = new Array();
 var miamNoir = new Array();
 var miamRouge = new Array();
 //tableau contenant les images du snake noir (parce que c'est quand même plus joli
-var snakeBodyNoir = ["url('img/queueDroiteNoir.png')","url('img/queueGaucheNoir.png')","url('img/queueHautNoir.png')","url('img/queueBasNoir.png')",
-                     "url('img/teteNoirDroite.png')","url('img/teteNoirGauche.png')","url('img/teteNoirHaute.png')","url('img/teteNoirBas.png')",
-                     "url('img/corpDroiteNoir.png')","url('img/corpHautNoir.png')",
-                     "url('img/corpHautDroiteNoir.png')","url('img/corpGaucheHautNoir.png')","url('img/corpBasDroiteNoir.png')","url('img/corpBasGaucheNoir.png')",
-                     "url('img/miamNoir.png')"];
-var snakeBodyRouge = ["url('img/queueDroiteRouge.png')","url('img/queueGaucheRouge.png')","url('img/queueHautRouge.png')","url('img/queueBasRouge.png')",
-                     "url('img/teteRougeDroite.png')","url('img/teteRougeGauche.png')","url('img/teteRougeHaute.png')","url('img/teteRougeBas.png')",
-                     "url('img/corpDroiteRouge.png')","url('img/corpHautRouge.png')",
-                     "url('img/corpHautDroiteRouge.png')","url('img/corpGaucheHautRouge.png')","url('img/corpBasDroiteRouge.png')","url('img/corpBasGaucheRouge.png')",
-                     "url('img/miamRouge.png')"];
+var snakeBodyNoir = new Array(); //Comme les snakes changent de couleur, c'est ce tableau qui va avoir la bonne couleur du corps
+var snakeBodyRouge = new Array(); //Comme les snakes changent de couleur, c'est ce tableau qui va avoir la bonne couleur du corps
+var snakeNoirViolet = ["url('img/queueDroiteNoirViolet.png')","url('img/queueGaucheNoirViolet.png')","url('img/queueHautNoirViolet.png')","url('img/queueBasNoirViolet.png')",
+                       "url('img/teteNoirDroiteViolet.png')","url('img/teteNoirGaucheViolet.png')","url('img/teteNoirHauteViolet.png')","url('img/teteNoirBasViolet.png')",
+                       "url('img/corpDroiteNoirViolet.png')","url('img/corpHautNoirViolet.png')",
+                       "url('img/corpHautDroiteNoirViolet.png')","url('img/corpGaucheHautNoirViolet.png')","url('img/corpBasDroiteNoirViolet.png')","url('img/corpBasGaucheNoirViolet.png')",
+                       "url('img/miamNoirViolet.png')"];
+var snakeRougeViolet = ["url('img/queueDroiteRougeViolet.png')","url('img/queueGaucheRougeViolet.png')","url('img/queueHautRougeViolet.png')","url('img/queueBasRougeViolet.png')",
+                        "url('img/teteRougeDroiteViolet.png')","url('img/teteRougeGaucheViolet.png')","url('img/teteRougeHauteViolet.png')","url('img/teteRougeBasViolet.png')",
+                        "url('img/corpDroiteRougeViolet.png')","url('img/corpHautRougeViolet.png')",
+                        "url('img/corpHautDroiteRougeViolet.png')","url('img/corpGaucheHautRougeViolet.png')","url('img/corpBasDroiteRougeViolet.png')","url('img/corpBasGaucheRougeViolet.png')",
+                        "url('img/miamRougeViolet.png')"];
+var snakeBodyNoirTemp = ["url('img/queueDroiteNoir.png')","url('img/queueGaucheNoir.png')","url('img/queueHautNoir.png')","url('img/queueBasNoir.png')",
+                         "url('img/teteNoirDroite.png')","url('img/teteNoirGauche.png')","url('img/teteNoirHaute.png')","url('img/teteNoirBas.png')",
+                         "url('img/corpDroiteNoir.png')","url('img/corpHautNoir.png')",
+                         "url('img/corpHautDroiteNoir.png')","url('img/corpGaucheHautNoir.png')","url('img/corpBasDroiteNoir.png')","url('img/corpBasGaucheNoir.png')",
+                         "url('img/miamNoir.png')"]; 
+var snakeBodyRougeTemp = ["url('img/queueDroiteRouge.png')","url('img/queueGaucheRouge.png')","url('img/queueHautRouge.png')","url('img/queueBasRouge.png')",
+                          "url('img/teteRougeDroite.png')","url('img/teteRougeGauche.png')","url('img/teteRougeHaute.png')","url('img/teteRougeBas.png')",
+                          "url('img/corpDroiteRouge.png')","url('img/corpHautRouge.png')",
+                          "url('img/corpHautDroiteRouge.png')","url('img/corpGaucheHautRouge.png')","url('img/corpBasDroiteRouge.png')","url('img/corpBasGaucheRouge.png')",
+                          "url('img/miamRouge.png')"]; 
 var indexPomme = new Array(); //tableau contenant les indexes des différentes pommes
 var typePomme = new Array(); //tableau permettant d'avoir le type de pomme, pour gérer les bonus
 var indexTemp;
@@ -70,10 +83,16 @@ var boucleNoir; //boucle de jeu noir
 var boucleRouge; //boucle de jeu rouge
 var flagBonusN; //permet de savoir si le snake noir est sous l'effet d'un bonus
 var flagBonusR; //permet de savoir si le snake rouge est sous l'effet d'un bonus
+var flagVraiBonusN; //permet de savoir si le snake noir est sous l'effet d'un vrai bonus, car les deux sont cumulable :p
+var flagVraiBonusR; //permet de savoir si le snake rouge est sous l'effet d'un vrai bonus, car les deux sont cumulable :p
+var tourVraiBonusN //permet de savoir pendant combien de tour le bonus vrai noir va continuer
+var tourVraiBonusR //permet de savoir pendant combien de tour le bonus vrai rouge va continuer
 var tourBonusN; //permet de savoir pendant combien de tour le bonus noir va continuer
 var tourBonusR; //permet de savoir pendant combien de tour le bonus rouge va continuer
-var bonusTypeN; //type de bonus (blueu, violet, marron...) pour le snake noir
-var bonusTypeR; //type de bonus (blueu, violet, marron...) pour le snake rouge
+var vraiBonusTypeN; ////type de bonus (blueu, marron) pour le snake noir
+var vraiBonusTypeR; //type de bonus (blueu, marron) pour le snake rouge
+var bonusTypeN; //type de bonus (blueu, marron) pour le snake noir
+var bonusTypeR; //type de bonus (blueu, marron) pour le snake rouge
 
 //création du snake
 positionSnakeNoir = [ "1 1", "1 2", "1 3" ];
@@ -125,11 +144,21 @@ submit.onclick = function newGame(){
 	tourBonusR = 0;
 	bonusTypeN="";
 	bonusTypeR="";
+	flagVraiBonusN=false;
+	flagVraiBonusR=false;
+	tourVraiBonusN = 0;
+	tourVraiBonusR = 0;
+	vraiBonusTypeN="";
+	vraiBonusTypeR="";
 	flagBonus=false;
 	tour=0;
 	//on rend les snake vivant
 	flagN=false;
 	flagR=false;
+	
+	//on met a jour les couleurs des snakes
+	snakeBodyNoir = snakeBodyNoirTemp;
+	snakeBodyRouge = snakeBodyRougeTemp;
 	
 	if (flagFristGame){
 		//on ferme les boucles de jeu
@@ -294,6 +323,14 @@ function deplacementSnakeNoir() {
 				tourBonusN=0;
 				bonusTypeN="maron";
 				break;
+			case "violet":
+				//on mange la pomme violette
+				snakeBodyNoir = mangerViolet(i, snakeBodyNoir, snakeNoirViolet);
+				//On met à jour le bonus
+				flagVraiBonusN=true;
+				tourVraiBonusN=0;
+				vraiBonusTypeN="violet";
+				break;
 			}
 		}
 	}
@@ -323,11 +360,15 @@ function deplacementSnakeNoir() {
 			}
 		}
 	}
-	//calcul du temps restant au bonus de jeu
+	//Si le snake est sous un bonus violet
+	if (vraiBonusTypeN){
+		
+	}
+	//calcul du temps restant au malus de jeu
 	if (flagBonusN){
-		tourBonusN++;
+		tourBonusN+=vitesseNoir;
 		//si le bonus prend fin
-		if (tourBonusN==nbrTourBonus){
+		if (tourBonusN>=nbrTourBonus){
 			//on regarde le type de bonus, pour un retour à l'état initial
 			switch(bonusTypeN){
 			
@@ -346,10 +387,24 @@ function deplacementSnakeNoir() {
 			flagBonusN=false;
 		}
 	}
+	//calcul du temps restant au bonus de jeu
+	if (flagVraiBonusN){
+		tourVraiBonusN+=vitesseNoir;
+		//si le bonus prend fin
+		if (tourVraiBonusN>=nbrTourVraiBonus){
+			//on regarde le type de bonus, pour un retour à l'état initial
+			switch(vraiBonusTypeN){
+			//si c'est une pomme violette
+			case "violet": snakeBodyNoir = snakeBodyNoirTemp;
+			}
+			vraiBonusTypeN="";
+			flagVraiBonusN=false;
+		}
+	}
 	//Calcul du temps restant dans un bonus final
 	if (flagBonus){
-		tour++;
-		if (tour==nbrTour){
+		tour += vitesseNoir;
+		if (tour>=nbrTour){
 			//lorsque le bonus se termine, la partie s'arrête
 			clearInterval(boucleNoir);
 			//on met le nombre de vicoire
@@ -449,9 +504,9 @@ function deplacementSnakeRouge(){
 	}
 	//calcul du temps restant au bonus de jeu
 	if (flagBonusR){
-		tourBonusR++;
+		tourBonusR += vitesseRouge;
 		//si le bonus prend fin
-		if (tourBonusR==nbrTourBonus){
+		if (tourBonusR>=nbrTourBonus){
 			//on regarde le type de bonus, pour un retour à l'état initial
 			switch(bonusTypeR){
 			
@@ -474,8 +529,8 @@ function deplacementSnakeRouge(){
 	}
 	//Calcul du temps restant dans un bonus final
 	if (flagBonus){
-		tour++;
-		if (tour==nbrTour){
+		tour +=vitesseRouge;
+		if (tour>=nbrTour){
 			clearInterval(boucleRouge);
 			victoire()
 			alert("La partie est terminée :D");
@@ -672,6 +727,16 @@ function mangerMaron(vitesse, bonusType, i, miam){
 	return vitesse;
 }
 
+function mangerViolet(i, snakeBody, snakeViolet){
+	//on enlève la pomme du tableau, et son type
+	indexPomme.splice(i, 1);
+	typePomme.splice(i, 1);
+	
+	//on change la couleur du snake
+	snakeBody=snakeViolet;
+	return snakeBody;
+};
+
 function apparaitrePleinDePomme(){
 	for (var i = 0; i< nbrPomme; i++){
 		//on ajoute une pomme au tableau des indexes des pommes
@@ -761,6 +826,10 @@ function apparaitreBonus(){
 	if (bonus(probaMaron)){
 		indexPomme.push(apparaitrePomme("url('img/pommeMaron.png')"));
 		typePomme.push("maron");
+	}
+	if (bonus(probaViolet)){
+		indexPomme.push(apparaitrePomme("url('img/pommeViolet.png')"));
+		typePomme.push("violet");
 	}
 }
 
