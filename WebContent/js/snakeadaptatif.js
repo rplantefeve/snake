@@ -8,17 +8,17 @@ var largeur = 20;
 //vitesse maximum
 var vitesseMax=50;
 //vitesse initiale + 1 (car lors de la création de la première pomme, on perd 1 en vitesse)
-var vitesseRouge=100; //vitesse du snake rouge
-var vitesseNoir=100; //vitesse du snake noir
+var vitesseRougeInit=100; //vitesse du snake rouge initiale
+var vitesseNoirInit=100; //vitesse du snake noir initiale
 //nombre de pommes a faire apparaitre à la mort du premier snake
 var nbrPomme = 19;
 var nbrTour = 10000; //durée du bonus final en nombre de millisecondes
 var nbrTourBonus = 10000; //durée des bonus classiques en nombre de millisecondes
-var nbrTourVraiBonus = 1000; //durée des vrais bonus classiques en nombre de millisecondes
+var nbrTourVraiBonus = 10000; //durée des vrais bonus classiques en nombre de millisecondes
 var probaJaune = 10;//Probabilité d'apparition d'une pomme jaune
 var probaBleue = 10; //Probabilité d'apparition d'une pomme bleue
 var probaMaron = 10; //Probabilité d'apparition d'une pomme maron
-var probaViolet = 2; //Probabilité d'apparition d'une pomme maron
+var probaViolet = 10; //Probabilité d'apparition d'une pomme maron
 
 
 
@@ -93,6 +93,8 @@ var vraiBonusTypeN; ////type de bonus (blueu, marron) pour le snake noir
 var vraiBonusTypeR; //type de bonus (blueu, marron) pour le snake rouge
 var bonusTypeN; //type de bonus (blueu, marron) pour le snake noir
 var bonusTypeR; //type de bonus (blueu, marron) pour le snake rouge
+var vitesseNoir; //vitesse du snake noir
+var vitesseRouge; //vitesse du snake rouge
 
 //création du snake
 positionSnakeNoir = [ "1 1", "1 2", "1 3" ];
@@ -135,8 +137,8 @@ submit.onclick = function newGame(){
 	scoreNoir=0;
 	scoreRouge=0;
 	//on reinitialise les vitesses
-	vitesseRouge=100;
-	vitesseNoir=100;
+	vitesseRouge=vitesseRougeInit;
+	vitesseNoir=vitesseNoirInit;
 	//on enlève les bonus
 	flagBonusN=false;
 	flagBonusR=false;
@@ -362,7 +364,33 @@ function deplacementSnakeNoir() {
 	}
 	//Si le snake est sous un bonus violet
 	if (vraiBonusTypeN){
-		
+		//dans ce cas, on peut manger l'autre snake
+		for (var i=0; i<positionSnakeRouge.length;i++){
+			//on regarde si il y a égalité
+			if(positionSnakeRouge[i] == positionSnakeNoir[positionSnakeNoir.length-1]){
+				//on doit augmenter l'index i pour manger ausi la case du croisement, sauf si on est sur la tête
+				if(i!=positionSnakeRouge.length-1){	i+=1;}
+				//on efface la partie mangée du snake
+				effacerSnake(positionSnakeRouge, i);
+				//on découpe le snale rouge
+				positionSnakeRouge = positionSnakeRouge.splice(i, positionSnakeRouge.length-i);
+				//il faut mettre a jour tous les tableaux
+				miamRouge = miamRouge.splice(i, miamRouge.length-1);
+				directionSnakeRouge = directionSnakeRouge.splice(1, directionSnakeRouge.length-i);
+				//on réduit la vitesse
+				vitesseRouge+=i;
+				//on refait la boucle pour appliquer le changement de vitesse
+				clearInterval(boucleRouge);
+				boucleRouge = setInterval(deplacementSnakeRouge, vitesseRouge);
+				//on réduit le score
+				scoreRouge-=10*i;
+				//on affiche le score rouge
+				document.getElementById(scorerouge).innerHTML=scoreRouge;
+				//on sort de la boucle
+				break;
+			}
+		}
+		//le cas ou on mort la tête est à part
 	}
 	//calcul du temps restant au malus de jeu
 	if (flagBonusN){
@@ -476,6 +504,14 @@ function deplacementSnakeRouge(){
 				tourBonusR=0;
 				bonusTypeR="maron";
 				break;
+			case "violet":
+				//on mange la pomme violette
+				snakeBodyRouge = mangerViolet(i, snakeBodyRouge, snakeRougeViolet);
+				//On met à jour le bonus
+				flagVraiBonusR=true;
+				tourVraiBonusR=0;
+				vraiBonusTypeR="violet";
+				break;
 			}
 		}
 	}
@@ -502,7 +538,37 @@ function deplacementSnakeRouge(){
 			}
 		}
 	}
-	//calcul du temps restant au bonus de jeu
+	//Si le snake est sous un bonus violet
+	if (vraiBonusTypeR){
+		//dans ce cas, on peut manger l'autre snake
+		for (var i=0; i<positionSnakeNoir.length;i++){
+			//on regarde si il y a égalité
+			if(positionSnakeNoir[i] == positionSnakeRouge[positionSnakeRouge.length-1]){
+				//on doit augmenter l'index i pour manger ausi la case du croisement, sauf si on est sur la tête
+				if(i!=positionSnakeNoir.length-1){	i+=1;}
+				//on efface la partie mangée du snake
+				effacerSnake(positionSnakeNoir, i);
+				//on découpe le snale rouge
+				positionSnakeNoir = positionSnakeNoir.splice(i, positionSnakeNoir.length-i);
+				//il faut mettre a jour tous les tableaux
+				miamNoir = miamNoir.splice(i, miamNoir.length-1);
+				directionSnakeNoir = directionSnakeNoir.splice(1, directionSnakeNoir.length-i);
+				//on réduit la vitesse
+				vitesseNoir+=i;
+				//on refait la boucle pour appliquer le changement de vitesse
+				clearInterval(boucleNoir);
+				boucleNoir = setInterval(deplacementSnakeNoir, vitesseNoir);
+				//on réduit le score
+				scoreNoir-=10*i;
+				//on affiche le score rouge
+				document.getElementById(scorenoir).innerHTML=scoreNoir;
+				//on sort de la boucle
+				break;
+			}
+		}
+		//le cas ou on mort la tête est à part
+	}
+	//calcul du temps restant au malus de jeu
 	if (flagBonusR){
 		tourBonusR += vitesseRouge;
 		//si le bonus prend fin
@@ -525,6 +591,20 @@ function deplacementSnakeRouge(){
 			}
 			bonusTypeR="";
 			flagBonusR=false;
+		}
+	}
+	//calcul du temps restant au bonus de jeu
+	if (flagVraiBonusR){
+		tourVraiBonusR+=vitesseRouge;
+		//si le bonus prend fin
+		if (tourVraiBonusR>=nbrTourVraiBonus){
+			//on regarde le type de bonus, pour un retour à l'état initial
+			switch(vraiBonusTypeR){
+			//si c'est une pomme violette
+			case "violet": snakeBodyRouge = snakeBodyRougeTemp;
+			}
+			vraiBonusTypeR="";
+			flagVraiBonusR=false;
 		}
 	}
 	//Calcul du temps restant dans un bonus final
@@ -663,6 +743,12 @@ function afficherSnake(positionSnake, directionSnake, miam, snakeBody){
 	}
 }
 
+//cette fonction efface les "temp" premières cases d'un snake
+function effacerSnake(positionSnake, temp){
+	for (var j=0; j<temp; j++){
+		document.getElementById(positionSnake[j]).style.backgroundImage="url()";
+	}
+}
 
 
 function mangerPomme(positionSnake, score, nomScore, directionSnake, directionBoucle, miam) {
@@ -682,9 +768,7 @@ function mangerPomme(positionSnake, score, nomScore, directionSnake, directionBo
 function mangerJaune(positionSnake, directionSnake,miam, i){
 	var temp = Math.floor(positionSnake.length/2);
 	//je change de couleur les premières cases du snake
-	for (var j=0; j<temp; j++){
-		document.getElementById(positionSnake[j]).style.backgroundImage="url()";
-	}
+	effacerSnake(positionSnake, temp);
 	//on enlève la pomme du tableau, et son type
 	indexPomme.splice(i, 1);
 	typePomme.splice(i, 1);
