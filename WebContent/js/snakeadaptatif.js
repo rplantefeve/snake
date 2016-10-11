@@ -214,8 +214,8 @@ submit.onclick = function newGame(){
 	boucleNoir = setInterval(deplacementSnakeNoir, vitesseNoir); //boucle de jeu du snake noir
 	boucleRouge = setInterval(deplacementSnakeRouge, vitesseRouge); //boucle de jeu du snake rouge
 	
-	flagFristGame=true //la partie commence, donc ce n'est plus la première
-}
+	flagFristGame=true; //la partie commence, donc ce n'est plus la première
+};
 
 //déplacement du snake noir
 window.addEventListener("keydown", function(event) {
@@ -677,7 +677,7 @@ function avancer(positionSnake, direction, directionSnake, miam){
 	directionSnake[directionSnake.length-1] = directionBoucle;
 	miam[miam.length-1]=false;
 	
-	return directionBoucle
+	return directionBoucle;
 }
 
 
